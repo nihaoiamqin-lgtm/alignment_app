@@ -2,8 +2,8 @@
 <html>
   <head>
     <title>Alignment App</title>
-    <script type="module" crossorigin src="https://cdn.jsdelivr.net/npm/@gradio/lite/dist/lite.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gradio/lite/dist/lite.css" />
+    <script type="module" crossorigin src="https://cdn.jsdelivr.net/npm/@gradio/lite@4.44.1/dist/lite.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gradio/lite@4.44.1/dist/lite.css" />
   </head>
   <body>
     <gradio-lite>
@@ -115,6 +115,8 @@ app = gr.Interface(
     title="Sequence Alignment Explorer",
     description="Explore how scoring choices change global and local alignments."
 )
+
+app.launch()
     </gradio-lite>
   </body>
 </html>

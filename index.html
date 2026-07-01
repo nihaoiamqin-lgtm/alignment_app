@@ -6,12 +6,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gradio/lite/dist/lite.css" />
   </head>
   <body>
-    
     <gradio-lite>
 import gradio as gr
 
-
-# --- 1. LOCAL ALIGNMENT (Smith-Waterman) ---
 def local_score_table(str1: str, str2: str, match: float, mismatch: float, gap: float) -> list[list[float]]:
     rows = len(str1) + 1
     cols = len(str2) + 1
@@ -62,13 +59,10 @@ def local_alignment(str1: str, str2: str, match: float, mismatch: float, gap: fl
             
     return f"Score: {max_score}\n\n{align1}\n{align2}"
 
-# --- 2. GLOBAL ALIGNMENT (Needleman-Wunsch) ---
 def global_alignment(str1: str, str2: str, match: float, mismatch: float, gap: float):
     rows = len(str1) + 1
     cols = len(str2) + 1
     matrix = [[0.0] * cols for _ in range(rows)]
-    
-    # Initialize edges with gap penalties
     for i in range(1, rows): matrix[i][0] = matrix[i-1][0] - gap
     for j in range(1, cols): matrix[0][j] = matrix[0][j-1] - gap
         
@@ -77,16 +71,14 @@ def global_alignment(str1: str, str2: str, match: float, mismatch: float, gap: f
             diag = matrix[i-1][j-1] + (match if str1[i-1] == str2[j-1] else -mismatch)
             up = matrix[i-1][j] - gap
             left = matrix[i][j-1] - gap
-            matrix[i][j] = max(diag, up, left) # No flooring at 0 for global!
+            matrix[i][j] = max(diag, up, left) 
             
-    # Traceback from bottom right
     i, j = rows - 1, cols - 1
     align1, align2 = "", ""
     final_score = matrix[i][j]
     
     while i > 0 or j > 0:
         CURRENT = matrix[i][j]
-        # Careful with edge cases during global traceback
         if i > 0 and j > 0 and CURRENT == matrix[i-1][j-1] + (match if str1[i-1] == str2[j-1] else -mismatch):
             align1 = str1[i-1] + align1
             align2 = str2[j-1] + align2
@@ -103,14 +95,12 @@ def global_alignment(str1: str, str2: str, match: float, mismatch: float, gap: f
             
     return f"Score: {final_score}\n\n{align1}\n{align2}"
 
-# --- 3. GRADIO APP WRAPPER ---
 def run_app(algo_type, seq1, seq2, match, mismatch, gap):
     if algo_type == "Local Alignment":
         return local_alignment(seq1.upper(), seq2.upper(), match, mismatch, gap)
     else:
         return global_alignment(seq1.upper(), seq2.upper(), match, mismatch, gap)
 
-# --- 4. BUILD THE UI ---
 app = gr.Interface(
     fn=run_app,
     inputs=[
@@ -125,10 +115,6 @@ app = gr.Interface(
     title="Sequence Alignment Explorer",
     description="Explore how scoring choices change global and local alignments."
 )
-
-# IMPORTANT: Do NOT include app.launch() at the end! 
-app.launch()
     </gradio-lite>
-
   </body>
 </html>
